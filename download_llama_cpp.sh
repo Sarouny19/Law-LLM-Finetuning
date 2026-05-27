@@ -4,8 +4,8 @@
 #
 # What this script does:
 # 1) Clones the official llama.cpp repository into ./tools/llama.cpp
-# 2) Builds the standard llama.cpp toolchain needed for GGUF export and finetune-related utilities
-# 3) Optionally disables the UI build only when you explicitly request no-UI mode
+# 2) Builds only the CPU tools needed for GGUF export and finetune-related utilities
+# 3) Avoids the optional app/UI targets that can fail in minimal no-GPU setups
 # 4) Leaves the repo ready for `export_gguf_4bit.py`
 #
 # Usage:
@@ -29,23 +29,12 @@ fi
 
 cd "$LLAMA_CPP_DIR"
 
-if [ "${LLAMA_BUILD_UI:-0}" = "1" ]; then
-  echo "Building llama.cpp with UI enabled"
-  cmake -B build \
-    -DGGML_NATIVE=ON \
-    -DLLAMA_BUILD_TESTS=OFF \
-    -DLLAMA_BUILD_EXAMPLES=OFF \
-    -DLLAMA_BUILD_SERVER=OFF \
-    -DLLAMA_BUILD_TOOLS=ON \
-    -DLLAMA_BUILD_UI=ON
-else
-  echo "Building llama.cpp without UI (default for no-GPU/no-frontend setup)"
-  cmake -B build \
-    -DGGML_NATIVE=ON \
-    -DLLAMA_BUILD_TESTS=OFF \
-    -DLLAMA_BUILD_EXAMPLES=OFF \
-    -DLLAMA_BUILD_SERVER=OFF \
-    -DLLAMA_BUILD_TOOLS=ON \
-    -DLLAMA_BUILD_UI=OFF
-fi
-cmake --build build -j "${JOBS:-$(nproc 2>/dev/null || echo 4)}"
+cmake -B build \
+  -DGGML_NATIVE=ON \
+  -DLLAMA_BUILD_TESTS=OFF \
+  -DLLAMA_BUILD_EXAMPLES=OFF \
+  -DLLAMA_BUILD_SERVER=OFF \
+  -DLLAMA_BUILD_TOOLS=ON \
+  -DLLAMA_BUILD_UI=OFF \
+  -DLLAMA_BUILD_LLAMA=OFF
+cmake --build build --target llama-quantize llama-gguf-split llama-export-lora llama-imatrix llama-bench llama-perplexity llama-completion llama-fit-params -j "${JOBS:-$(nproc 2>/dev/null || echo 4)}"
