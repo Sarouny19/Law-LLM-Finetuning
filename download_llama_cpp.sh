@@ -4,8 +4,9 @@
 #
 # What this script does:
 # 1) Clones the official llama.cpp repository into ./tools/llama.cpp
-# 2) Builds the CPU quantization tools needed for GGUF export
-# 3) Leaves the repo ready for `export_gguf_4bit.py`
+# 2) Builds only the CPU tools needed for GGUF export and finetune-related utilities
+# 3) Disables the optional UI build so no Node/npm or embedded asset generation is required
+# 4) Leaves the repo ready for `export_gguf_4bit.py`
 #
 # Usage:
 #   bash download_llama_cpp.sh
@@ -28,5 +29,11 @@ fi
 
 cd "$LLAMA_CPP_DIR"
 
-cmake -B build -DGGML_NATIVE=ON
+cmake -B build \
+  -DGGML_NATIVE=ON \
+  -DLLAMA_BUILD_TESTS=OFF \
+  -DLLAMA_BUILD_EXAMPLES=OFF \
+  -DLLAMA_BUILD_SERVER=OFF \
+  -DLLAMA_BUILD_TOOLS=ON \
+  -DLLAMA_BUILD_UI=OFF
 cmake --build build -j "${JOBS:-$(nproc 2>/dev/null || echo 4)}"
