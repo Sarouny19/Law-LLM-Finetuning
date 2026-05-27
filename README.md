@@ -165,7 +165,7 @@ bash install_conda_env.sh
 - 用 `--override-channels -c defaults` 创建环境，避免清华镜像 `free` 源 404
 - 安装基础依赖
 - 安装 LawBench 依赖
-- 安装训练运行时依赖（比如 `regex`、`transformers`、`peft` 等）
+- 安装训练运行时依赖（比如 `regex`、`transformers`、`peft`、`omegaconf` 等）
 - 安装 `llamafactory==0.9.3`（因为 0.9.4 及之后版本要求 Python >= 3.11，而这台环境是 Python 3.10）
 
 ### 2. 只装基础依赖
