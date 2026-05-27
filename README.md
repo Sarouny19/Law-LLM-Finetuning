@@ -166,7 +166,7 @@ bash install_conda_env.sh
 - 安装基础依赖
 - 安装 LawBench 依赖
 - 安装训练运行时依赖（比如 `regex`、`transformers`、`peft` 等）
-- 从 GitHub 安装 LlamaFactory
+- 安装 `llamafactory==0.9.3`（因为 0.9.4 及之后版本要求 Python >= 3.11，而这台环境是 Python 3.10）
 
 ### 2. 只装基础依赖
 
@@ -192,19 +192,17 @@ bash install_train_runtime_deps.sh
 bash install_llamafactory.sh
 ```
 
-LlamaFactory 当前安装前会先补齐构建工具：
+LlamaFactory 当前固定到：
 
 ```bash
-python -m pip install -U hatchling build wheel setuptools
+llamafactory==0.9.3
 ```
 
-如果你遇到镜像没有 `hatchling`，脚本会自动切换到公网 PyPI：
+原因：
 
-```bash
-python -m pip install -U --index-url https://pypi.org/simple hatchling build wheel setuptools
-```
-
-这一步是为了解决 `hatchling.build` 缺失导致的构建失败。
+- `0.9.4` 要求 `Python >= 3.11`
+- 你当前环境是 `Python 3.10.20`
+- 所以必须回退到兼容版本
 
 ### 6. 仍然保留分段安装入口
 
@@ -344,6 +342,7 @@ conda activate law-llm
 - `install_llamafactory.sh`
 - `install_deps_autodl.sh`
 - `install_hfd_aria2.sh`
+- `install_nodejs_npm.sh`
 - `download_hfd_model.sh`
 - `autodl_start.sh`
 - `autodl_full_pipeline.sh`
