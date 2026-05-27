@@ -5,8 +5,7 @@
     "columns": {
       "prompt": "instruction",
       "query": "input",
-      "response": "output",
-      "system": "system"
+      "response": "output"
     }
   },
   "disc_law_llm_sft_val": {
@@ -15,8 +14,7 @@
     "columns": {
       "prompt": "instruction",
       "query": "input",
-      "response": "output",
-      "system": "system"
+      "response": "output"
     }
   }
 }
