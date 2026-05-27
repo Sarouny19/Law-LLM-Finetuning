@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
 #
-# Conda environment bootstrapper for AutoDL
+# Final conda environment bootstrapper for China-network AutoDL 5090
 #
 # What this script does:
 # 1) Creates a clean, dedicated conda environment for LlamaFactory 0.9.3
-# 2) Pins package versions to a known-compatible set for Python 3.10
-# 3) Avoids inheriting the polluted package state from the existing env
+# 2) Removes any existing broken environment with the same name first
+# 3) Pins package versions to a known-compatible Python 3.10 stack
+# 4) Installs everything from stable public PyPI or the selected mirror
 #
 # Usage:
 #   bash install_conda_env.sh
@@ -13,8 +14,9 @@
 set -euo pipefail
 
 PROJECT_DIR=${PROJECT_DIR:-$(cd "$(dirname "$0")" && pwd)}
-ENV_NAME=${ENV_NAME:-law-llm-compat}
+ENV_NAME=${ENV_NAME:-law-llm-5090}
 PYTHON_VERSION=${PYTHON_VERSION:-3.10}
+PIP_INDEX_URL=${PIP_INDEX_URL:-https://mirrors.aliyun.com/pypi/simple}
 
 CONDA_BIN="${CONDA_EXE:-}"
 if [ -z "$CONDA_BIN" ]; then
@@ -31,17 +33,22 @@ if [ -z "$CONDA_BIN" ]; then
 fi
 
 if "$CONDA_BIN" env list | awk '{print $1}' | grep -qx "$ENV_NAME"; then
-  echo "Conda env $ENV_NAME already exists."
-else
-  "$CONDA_BIN" create -y -n "$ENV_NAME" python="$PYTHON_VERSION" --override-channels -c defaults
+  echo "Removing existing broken env: $ENV_NAME"
+  "$CONDA_BIN" env remove -y -n "$ENV_NAME"
 fi
 
-# Core tooling
-"$CONDA_BIN" run -n "$ENV_NAME" python -m pip install -U pip setuptools wheel
-"$CONDA_BIN" run -n "$ENV_NAME" python -m pip install -U --index-url https://pypi.org/simple "regex>=2025.10.22" "omegaconf>=2.3.0"
+echo "Creating clean env: $ENV_NAME"
+"$CONDA_BIN" create -y -n "$ENV_NAME" python="$PYTHON_VERSION" --override-channels -c defaults
 
-# LlamaFactory 0.9.3 compatible stack for Python 3.10
-"$CONDA_BIN" run -n "$ENV_NAME" python -m pip install -U --index-url https://pypi.org/simple \
+# Activate the env for the remainder of this script.
+eval "$($CONDA_BIN shell.bash hook)"
+conda activate "$ENV_NAME"
+
+python -m pip install -U pip setuptools wheel
+python -m pip install -U --index-url "$PIP_INDEX_URL" "regex>=2025.10.22" "omegaconf>=2.3.0"
+
+# Compatible stack for LlamaFactory 0.9.3 on Python 3.10
+python -m pip install -U --index-url "$PIP_INDEX_URL" \
   "numpy<2.0.0" \
   "transformers>=4.45.0,<=4.52.4,!=4.46.0,!=4.46.1,!=4.46.2,!=4.46.3,!=4.47.0,!=4.47.1,!=4.48.0,!=4.52.0" \
   "tokenizers>=0.19.0,<=0.21.1" \
@@ -79,9 +86,12 @@ fi
   "tyro<0.9.0" \
   "uvicorn"
 
-# Install LlamaFactory itself with dependencies disabled (we've already pinned the stack)
-"$CONDA_BIN" run -n "$ENV_NAME" python -m pip install --no-deps --index-url https://pypi.org/simple "llamafactory==0.9.3"
+python -m pip install --no-deps --index-url "$PIP_INDEX_URL" "llamafactory==0.9.3"
+python -m pip check || true
+python - <<'PY'
+import transformers, omegaconf, peft, accelerate, datasets, trl
+print("runtime import check OK")
+PY
 
 echo "Conda environment ready: $ENV_NAME"
 echo "Activate it with: conda activate $ENV_NAME"
-echo "If you want to remove the broken old env, run: conda env remove -n law-llm"

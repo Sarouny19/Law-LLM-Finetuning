@@ -17,9 +17,10 @@ set -euo pipefail
 
 export TOKENIZERS_PARALLELISM=false
 export PYTHONUNBUFFERED=1
+export PIP_INDEX_URL=${PIP_INDEX_URL:-https://mirrors.aliyun.com/pypi/simple}
 
 PROJECT_DIR=${PROJECT_DIR:-$(cd "$(dirname "$0")" && pwd)}
-ENV_NAME=${ENV_NAME:-law-llm}
+ENV_NAME=${ENV_NAME:-law-llm-5090}
 
 CONDA_BIN="${CONDA_EXE:-}"
 if [ -z "$CONDA_BIN" ]; then
