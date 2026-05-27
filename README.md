@@ -2,23 +2,19 @@
 
 这个项目按“训练”和“评估”完全分开设计，适合在 AutoDL 上先完成训练，再单独跑 LawBench 评估。
 
-## 这次改成了 conda 友好型启动
+## 这次改成了 vGPU-32GB 友好型启动
 
-你说服务器镜像里自带 `miniconda3`，所以现在项目不再默认按纯 `pip` 方式启动，而是改成更适合 AutoDL 的 **conda 友好型流程**。
+你现在的机器是 **vGPU-32GB**，不是物理 5090。之前我按 5090 的思路写了太多“过强”或不必要的默认值，这是我前面判断不够准确的地方。
 
-新的思路是：
+现在我把方案改成：
 
-1. 找到 AutoDL 自带的 conda
-2. 创建独立环境 `law-llm-5090`
-3. 在这个环境里安装依赖
-4. 用这个环境跑训练和评估
+1. **Python 3.10** 保持不变
+2. **LlamaFactory 0.9.3** 保持不变
+3. **新环境名** 改成 `law-llm-vgpu32`
+4. **训练启动脚本** 只面向 vGPU-32GB 场景
+5. **默认不做过激优化**，优先保证一次跑通
 
-这样做的好处：
-
-- 不污染系统 Python
-- 更容易重复执行
-- 出问题时更容易回滚
-- 对 AutoDL 这种共享镜像更稳
+这样做的目标就是：**少折腾、少冲突、尽快跑通。**
 
 ---
 
@@ -49,7 +45,7 @@ bash check_env.sh
 
 - 系统信息
 - conda 是否存在
-- `law-llm-5090` 环境是否存在
+- `law-llm-vgpu32` 环境是否存在
 - Python / pip 版本
 - Git 是否可用
 - 常用依赖是否可导入
@@ -162,9 +158,8 @@ bash install_conda_env.sh
 这个脚本会：
 
 - 自动找到 AutoDL 自带的 conda
-- 删除旧的坏环境后重新创建一个新的 `law-llm-5090`
+- 删除旧的坏环境，重建一个新的 `law-llm-vgpu32`
 - 安装 Python 3.10 兼容的依赖组合
-- 使用国内 PyPI 镜像
 - 固定 `numpy<2.0.0`
 - 固定 `transformers` 在 LlamaFactory 0.9.3 兼容线
 - 固定 `accelerate/datasets/peft/trl/tokenizers` 到兼容版本
@@ -230,7 +225,7 @@ bash install_deps_autodl.sh
 bash autodl_start.sh
 ```
 
-这是 **conda 友好型训练启动脚本**，它会尝试自动激活 `law-llm-5090` 环境，并在开训前先修复运行时依赖。
+这是 **vGPU-32GB 友好型训练启动脚本**，它会尝试自动激活 `law-llm-vgpu32` 环境。
 
 ### 训练入口 2
 
@@ -327,7 +322,7 @@ bash install_llamafactory.sh
 ### 4) 激活环境
 
 ```bash
-conda activate law-llm-5090
+conda activate law-llm-vgpu32
 ```
 
 ### 5) 上传到 AutoDL
@@ -413,27 +408,14 @@ python export_gguf_4bit.py
 
 ---
 
-## 稳定版建议
+## 最稳的一次跑通流程
 
-如果你是第一次在 AutoDL 上跑，建议这样：
+如果你是第一次在 vGPU-32GB 上跑，建议这样：
 
-1. `bash check_env.sh`
-2. `bash install_conda_env.sh`
-3. `conda activate law-llm-5090`
+1. `bash install_conda_env.sh`
+2. `conda activate law-llm-vgpu32`
+3. `bash check_env.sh`
 4. `bash autodl_start.sh`
-
-如果镜像都不通，就先把模型手动上传到服务器，再这样启动：
-
-```bash
-LOCAL_SOURCE_DIR=/your/local/Qwen2.5-7B-Instruct bash download_qwen25_cn.sh
-```
-
-或者直接用 `hfd` 的方式下载：
-
-```bash
-bash install_hfd_aria2.sh
-bash download_hfd_model.sh Qwen/Qwen2.5-7B-Instruct
-```
 
 ---
 
@@ -453,4 +435,4 @@ python main.py -i <pred_dir> -o <metric_result>
 - `source` 不需要，已移除。
 - 训练和评估已完全分开。
 - 所有可执行脚本都加了开头注释，说明脚本用途和执行顺序。
-- 当前已经增加 conda 友好型安装与启动方式。
+- 当前已经切换为 vGPU-32GB 友好型最终方案。

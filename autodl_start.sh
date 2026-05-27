@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 #
-# AutoDL training starter (conda-friendly).
+# AutoDL training starter for vGPU-32GB.
 #
 # What this script does:
 # 1) Activates the dedicated conda environment if available
-# 2) Fixes runtime dependency mismatches for LlamaFactory/Transformers
+# 2) Repairs runtime dependency mismatches for LlamaFactory/Transformers
 # 3) Downloads the model and tools if needed
 # 4) Builds the cleaned training dataset
 # 5) Launches LlamaFactory training
@@ -17,10 +17,10 @@ set -euo pipefail
 
 export TOKENIZERS_PARALLELISM=false
 export PYTHONUNBUFFERED=1
-export PIP_INDEX_URL=${PIP_INDEX_URL:-https://mirrors.aliyun.com/pypi/simple}
+export CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES:-0}
 
 PROJECT_DIR=${PROJECT_DIR:-$(cd "$(dirname "$0")" && pwd)}
-ENV_NAME=${ENV_NAME:-law-llm-5090}
+ENV_NAME=${ENV_NAME:-law-llm-vgpu32}
 
 CONDA_BIN="${CONDA_EXE:-}"
 if [ -z "$CONDA_BIN" ]; then
@@ -35,7 +35,7 @@ fi
 
 if [ -n "$CONDA_BIN" ]; then
   eval "$($CONDA_BIN shell.bash hook)"
-  conda activate "$ENV_NAME" || true
+  conda activate "$ENV_NAME"
 fi
 
 cd "$PROJECT_DIR"

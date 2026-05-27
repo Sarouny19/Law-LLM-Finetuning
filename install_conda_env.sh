@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Final conda environment bootstrapper for China-network AutoDL 5090
+# Final conda environment bootstrapper for AutoDL vGPU-32GB
 #
 # What this script does:
 # 1) Creates a clean, dedicated conda environment for LlamaFactory 0.9.3
@@ -14,7 +14,7 @@
 set -euo pipefail
 
 PROJECT_DIR=${PROJECT_DIR:-$(cd "$(dirname "$0")" && pwd)}
-ENV_NAME=${ENV_NAME:-law-llm-5090}
+ENV_NAME=${ENV_NAME:-law-llm-vgpu32}
 PYTHON_VERSION=${PYTHON_VERSION:-3.10}
 PIP_INDEX_URL=${PIP_INDEX_URL:-https://mirrors.aliyun.com/pypi/simple}
 
@@ -40,14 +40,14 @@ fi
 echo "Creating clean env: $ENV_NAME"
 "$CONDA_BIN" create -y -n "$ENV_NAME" python="$PYTHON_VERSION" --override-channels -c defaults
 
-# Activate the env for the remainder of this script.
 eval "$($CONDA_BIN shell.bash hook)"
 conda activate "$ENV_NAME"
 
 python -m pip install -U pip setuptools wheel
 python -m pip install -U --index-url "$PIP_INDEX_URL" "regex>=2025.10.22" "omegaconf>=2.3.0"
 
-# Compatible stack for LlamaFactory 0.9.3 on Python 3.10
+# LlamaFactory 0.9.3 compatible stack for Python 3.10.
+# Keep this stack narrow to avoid resolver drift on China-network mirrors.
 python -m pip install -U --index-url "$PIP_INDEX_URL" \
   "numpy<2.0.0" \
   "transformers>=4.45.0,<=4.52.4,!=4.46.0,!=4.46.1,!=4.46.2,!=4.46.3,!=4.47.0,!=4.47.1,!=4.48.0,!=4.52.0" \
@@ -95,3 +95,4 @@ PY
 
 echo "Conda environment ready: $ENV_NAME"
 echo "Activate it with: conda activate $ENV_NAME"
+echo "If you want to remove the broken old env, run: conda env remove -n law-llm-compat"
