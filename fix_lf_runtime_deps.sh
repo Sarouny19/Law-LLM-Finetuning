@@ -12,7 +12,7 @@
 #
 set -euo pipefail
 
-PIP_INDEX_URL=${PIP_INDEX_URL:-https://mirrors.aliyun.com/pypi/simple}
+PIP_INDEX_URL=${PIP_INDEX_URL:-https://pypi.tuna.tsinghua.edu.cn/simple}
 
 python -m pip uninstall -y transformers tokenizers accelerate datasets peft trl numpy || true
 python -m pip install -U --index-url "$PIP_INDEX_URL" \

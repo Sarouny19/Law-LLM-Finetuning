@@ -16,7 +16,7 @@ set -euo pipefail
 PROJECT_DIR=${PROJECT_DIR:-$(cd "$(dirname "$0")" && pwd)}
 ENV_NAME=${ENV_NAME:-law-llm-vgpu32}
 PYTHON_VERSION=${PYTHON_VERSION:-3.10}
-PIP_INDEX_URL=${PIP_INDEX_URL:-https://mirrors.aliyun.com/pypi/simple}
+PIP_INDEX_URL=${PIP_INDEX_URL:-https://pypi.tuna.tsinghua.edu.cn/simple}
 
 CONDA_BIN="${CONDA_EXE:-}"
 if [ -z "$CONDA_BIN" ]; then
@@ -44,11 +44,11 @@ eval "$($CONDA_BIN shell.bash hook)"
 conda activate "$ENV_NAME"
 
 python -m pip install -U pip setuptools wheel
-python -m pip install -U --index-url "$PIP_INDEX_URL" "regex>=2025.10.22" "omegaconf>=2.3.0"
+python -m pip install -U --index-url https://pypi.org/simple "regex>=2025.10.22" "omegaconf>=2.3.0"
 
 # LlamaFactory 0.9.3 compatible stack for Python 3.10.
 # Keep this stack narrow to avoid resolver drift on China-network mirrors.
-python -m pip install -U --index-url "$PIP_INDEX_URL" \
+python -m pip install -U --index-url https://pypi.tuna.tsinghua.edu.cn/simple \
   "numpy<2.0.0" \
   "transformers>=4.45.0,<=4.52.4,!=4.46.0,!=4.46.1,!=4.46.2,!=4.46.3,!=4.47.0,!=4.47.1,!=4.48.0,!=4.52.0" \
   "tokenizers>=0.19.0,<=0.21.1" \

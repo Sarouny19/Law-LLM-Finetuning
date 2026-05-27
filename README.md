@@ -165,6 +165,7 @@ bash install_conda_env.sh
 - 固定 `accelerate/datasets/peft/trl/tokenizers` 到兼容版本
 - 安装 `omegaconf`
 - 安装 `llamafactory==0.9.3`
+- PyPI 默认使用清华源，避免阿里云源找不到部分包
 
 ### 2. 只装基础依赖
 
