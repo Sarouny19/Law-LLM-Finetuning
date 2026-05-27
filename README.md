@@ -9,7 +9,7 @@
 新的思路是：
 
 1. 找到 AutoDL 自带的 conda
-2. 创建独立环境 `law-llm`
+2. 创建独立环境 `law-llm-compat`
 3. 在这个环境里安装依赖
 4. 用这个环境跑训练和评估
 
@@ -49,7 +49,7 @@ bash check_env.sh
 
 - 系统信息
 - conda 是否存在
-- `law-llm` 环境是否存在
+- `law-llm-compat` 环境是否存在
 - Python / pip 版本
 - Git 是否可用
 - 常用依赖是否可导入
@@ -162,11 +162,13 @@ bash install_conda_env.sh
 这个脚本会：
 
 - 自动找到 AutoDL 自带的 conda
-- 用 `--override-channels -c defaults` 创建环境，避免清华镜像 `free` 源 404
-- 安装基础依赖
-- 安装 LawBench 依赖
-- 安装训练运行时依赖（比如 `regex`、`transformers`、`peft`、`omegaconf` 等）
-- 安装 `llamafactory==0.9.3`（因为 0.9.4 及之后版本要求 Python >= 3.11，而这台环境是 Python 3.10）
+- 创建一个全新的、干净的环境 `law-llm-compat`
+- 安装 Python 3.10 兼容的依赖组合
+- 固定 `numpy<2.0.0`
+- 固定 `transformers` 在 LlamaFactory 0.9.3 兼容线
+- 固定 `accelerate/datasets/peft/trl/tokenizers` 到兼容版本
+- 安装 `omegaconf`
+- 安装 `llamafactory==0.9.3`
 
 ### 2. 只装基础依赖
 
@@ -227,7 +229,7 @@ bash install_deps_autodl.sh
 bash autodl_start.sh
 ```
 
-这是 **conda 友好型训练启动脚本**，它会尝试自动激活 `law-llm` 环境。
+这是 **conda 友好型训练启动脚本**，它会尝试自动激活 `law-llm-compat` 环境。
 
 ### 训练入口 2
 
@@ -324,7 +326,7 @@ bash install_llamafactory.sh
 ### 4) 激活环境
 
 ```bash
-conda activate law-llm
+conda activate law-llm-compat
 ```
 
 ### 5) 上传到 AutoDL
@@ -416,7 +418,7 @@ python export_gguf_4bit.py
 
 1. `bash check_env.sh`
 2. `bash install_conda_env.sh`
-3. `conda activate law-llm`
+3. `conda activate law-llm-compat`
 4. `bash autodl_start.sh`
 
 如果镜像都不通，就先把模型手动上传到服务器，再这样启动：
