@@ -5,7 +5,7 @@
 # What this script does:
 # 1) Installs only the official LawBench evaluation dependencies
 # 2) Keeps versions pinned where the benchmark expects them
-# 3) Can be run independently after the base environment is ready
+# 3) Installs the packages into the currently active environment
 #
 # Usage:
 #   bash install_lawbench_deps.sh
