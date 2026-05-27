@@ -5,7 +5,8 @@
 # What this script does:
 # 1) Ensures eval/save strategy are compatible with load_best_model_at_end
 # 2) Verifies the core config keys are present
-# 3) Fails fast before a costly training run starts
+# 3) Ensures the dataset metadata file exists on disk
+# 4) Fails fast before a costly training run starts
 #
 # Usage:
 #   bash validate_lora_yaml.sh
@@ -13,18 +14,23 @@
 set -euo pipefail
 
 YAML_FILE=${YAML_FILE:-llamafactory_qwen25_lora.yaml}
+DATASET_INFO_FILE=${DATASET_INFO_FILE:-dataset/dataset_info.json}
 
 python - <<'PY'
 import sys
 from pathlib import Path
 import yaml
 
-path = Path("llamafactory_qwen25_lora.yaml")
-if not path.exists():
-    print(f"Missing YAML: {path}")
+yaml_path = Path("llamafactory_qwen25_lora.yaml")
+info_path = Path("dataset/dataset_info.json")
+if not yaml_path.exists():
+    print(f"Missing YAML: {yaml_path}")
+    sys.exit(1)
+if not info_path.exists():
+    print(f"Missing dataset info file: {info_path}")
     sys.exit(1)
 
-cfg = yaml.safe_load(path.read_text(encoding="utf-8"))
+cfg = yaml.safe_load(yaml_path.read_text(encoding="utf-8"))
 
 def get(*keys):
     for k in keys:
@@ -50,7 +56,6 @@ required = [
     "finetuning_type",
     "dataset",
     "dataset_dir",
-    "dataset_info",
     "template",
     "output_dir",
 ]

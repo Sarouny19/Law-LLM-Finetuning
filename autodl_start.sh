@@ -43,17 +43,8 @@ fi
 cd "$PROJECT_DIR"
 
 echo "=== Validating training config ==="
-python - <<'PY'
-import yaml
-from pathlib import Path
-path = Path("llamafactory_qwen25_lora.yaml")
-print(path.resolve())
-print(path.read_text(encoding="utf-8"))
-cfg = yaml.safe_load(path.read_text(encoding="utf-8"))
-print("keys:", sorted(cfg.keys()))
-PY
-
 bash validate_lora_yaml.sh
+
 bash fix_lf_runtime_deps.sh
 bash download_qwen25_cn.sh
 bash download_llama_cpp.sh
