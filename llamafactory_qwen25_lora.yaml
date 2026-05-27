@@ -7,7 +7,6 @@ do_predict: false
 dataset: disc_law_llm_sft_train
 eval_dataset: disc_law_llm_sft_val
 dataset_dir: ./dataset
-template: qwen2_vl
 cutoff_len: 4096
 max_samples: 500000
 overwrite_cache: true
