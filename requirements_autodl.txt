@@ -1,0 +1,23 @@
+# Minimal runtime dependencies for AutoDL
+# Keep this file light to avoid pip trying to reinstall large CUDA/torch wheels.
+
+# Core utilities used by the scripts
+pyyaml
+requests
+huggingface_hub[cli]
+cmake
+ninja
+
+# Data and text processing
+sentencepiece>=0.2.0
+tokenizers>=0.19.1
+
+# LawBench official evaluation dependencies
+rouge_chinese==1.0.3
+cn2an==0.5.22
+ltp==4.2.13
+OpenCC==1.1.6
+python-Levenshtein==0.21.1
+pypinyin==0.49.0
+tqdm==4.64.1
+timeout_decorator==0.5.0
