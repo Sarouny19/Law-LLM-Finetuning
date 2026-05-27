@@ -192,6 +192,14 @@ bash install_train_runtime_deps.sh
 bash install_llamafactory.sh
 ```
 
+LlamaFactory 当前安装前会先补齐构建工具：
+
+```bash
+python -m pip install -U hatchling build wheel setuptools
+```
+
+这一步是为了解决 `hatchling.build` 缺失导致的构建失败。
+
 ### 6. 仍然保留分段安装入口
 
 ```bash
