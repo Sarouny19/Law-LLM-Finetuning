@@ -14,6 +14,8 @@ overwrite_cache: true
 preprocessing_num_workers: 16
 output_dir: ./outputs/qwen2.5-law-lora
 logging_steps: 10
+evaluation_strategy: steps
+save_strategy: steps
 save_steps: 200
 eval_steps: 200
 plot_loss: true
