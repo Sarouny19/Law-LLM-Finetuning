@@ -198,6 +198,12 @@ LlamaFactory 当前安装前会先补齐构建工具：
 python -m pip install -U hatchling build wheel setuptools
 ```
 
+如果你遇到镜像没有 `hatchling`，脚本会自动切换到公网 PyPI：
+
+```bash
+python -m pip install -U --index-url https://pypi.org/simple hatchling build wheel setuptools
+```
+
 这一步是为了解决 `hatchling.build` 缺失导致的构建失败。
 
 ### 6. 仍然保留分段安装入口
