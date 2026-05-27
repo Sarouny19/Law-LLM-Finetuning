@@ -4,7 +4,8 @@ finetuning_type: lora
 do_train: true
 do_eval: true
 do_predict: false
-dataset: disc_law_llm_sft_train,disc_law_llm_sft_val
+dataset: disc_law_llm_sft_train
+eval_dataset: disc_law_llm_sft_val
 dataset_dir: ./dataset
 template: qwen2
 cutoff_len: 4096
